@@ -1,23 +1,46 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 
-
-public class ObjectSelectedEventArgs : EventArgs
+public class SelectedEventArgs : EventArgs
 {
+    public SelectedEventArgs(GameObject selectedObject, string buttonName)
+    {
+        this.GameObject = selectedObject;
+        this.ButtonName = buttonName;
+    }
+    public SelectedEventArgs(Vector3 selectedPosition, string buttonName)
+    {
+        this.Position = selectedPosition;
+        this.ButtonName = buttonName;
+    }
 
-
-    public GameObject Objects
+    public GameObject GameObject
     {
         get;
-        set;
+        private set;
+    }
+
+    public Vector3 Position
+    {
+        get;
+        private set;
+    }
+
+    public String ButtonName
+    {
+        get;
+        private set;
     }
 }
 
-public delegate void ObjectSelectedEventHandler(object sender, EventArgs e);
+public delegate void SelectedEventHandler(object sender, SelectedEventArgs e);
 
 public class SelectionManager : BaseSingleton<SelectionManager>, IInputInjected
 {
+    public List<String> SelectableTags = new List<string>();
+
     /// <summary>
     /// Raycast used to store the ray information.
     /// </summary>
@@ -33,8 +56,30 @@ public class SelectionManager : BaseSingleton<SelectionManager>, IInputInjected
     {
         if (InputProxy.GetButtonUp("Fire1") && CastRay(InputProxy.MousePosition))
         {
-            Debug.Log(Hit.transform.gameObject);
+            // Check if the object were selectable.
+            bool isSelectable = false;
 
+            // Check each tag to see if it is selectable.
+            foreach (string tag in SelectableTags)
+            {
+                if (Hit.transform.gameObject.CompareTag(tag))
+                {
+                    isSelectable = true;
+                    break;
+                }
+            }
+
+            // If the object is selectable
+            if (isSelectable)
+            {
+                // Tell everyone that some selectable was selected.
+                OnSelected(new SelectedEventArgs(Hit.transform.gameObject, "Fire1"));
+            }
+            else
+            {
+                // If not, just tell the click point.
+                OnSelected(new SelectedEventArgs(Hit.point, "Fire1"));
+            }
         }
     }
 
@@ -58,13 +103,13 @@ public class SelectionManager : BaseSingleton<SelectionManager>, IInputInjected
         InputProxy = null;
     }
 
-    public ObjectSelectedEventHandler ObjectSelected;
+    public event SelectedEventHandler Selected;
 
-    public void OnObjectSelected(EventArgs e)
+    public void OnSelected(SelectedEventArgs e)
     {
-        if (ObjectSelected != null)
+        if (Selected != null)
         {
-            ObjectSelected(this, e);
+            Selected(this, e);
         }
     }
 }
