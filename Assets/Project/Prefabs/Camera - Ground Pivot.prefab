@@ -166,7 +166,7 @@ MonoBehaviour:
   rotateSpeed: 1.75
   zoomSpeed: 3
   maxZoomIn: -9
-  maxZoomOut: -28
+  maxZoomOut: -18
   Camera: {fileID: 139886}
 --- !u!124 &12478350
 Behaviour:
@@ -193,6 +193,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: m_LocalPosition.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: maxZoomOut
+      value: -18
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

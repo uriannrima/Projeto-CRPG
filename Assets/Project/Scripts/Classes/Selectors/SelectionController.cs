@@ -1,41 +1,66 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System;
 
+/// <summary>
+/// Implementation of what happens when something is selected.
+/// </summary>
 public class SelectionController : BaseMonoBehavior
 {
-    public GameObject SelectionMarkPrefab;
-    private GameObject SelectionMark;
+    public List<GameObject> SelectedObjects = new List<GameObject>();
 
-    public void Start()
+    void Start()
     {
-        CreateSelectionMark();
+        SelectionManager.Instance.Selected += Instance_Selected;
     }
 
-    private void CreateSelectionMark()
+    private void Instance_Selected(object sender, SelectedEventArgs e)
     {
-        // Instanciate
-        SelectionMark = Instantiate(SelectionMarkPrefab);
-
-        // At character and then bellow it.
-        SelectionMark.transform.Translate(this.transform.position);
-        SelectionMark.transform.Translate(0, -this.transform.localScale.y + 0.1f, 0);
-
-        // Set Character as parent.
-        SelectionMark.transform.parent = this.transform;
-
-        // Disable it.
-        SelectionMark.SetActive(false);
+        // Some gameObject was selected
+        if (e.GameObject != null)
+        {
+            HandleObjectSelection(e);
+        }
+        // No gameObject was selected, so a position was selected.
+        else
+        {
+            HandlePositionSelection(e);
+        }
     }
 
-    public void Select()
+    private void HandlePositionSelection(SelectedEventArgs e)
     {
-        // Enable the selection mark.
-        SelectionMark.SetActive(true);
+        // If someone is selected
+        if (SelectedObjects.Count != 0)
+        {
+            Debug.Log("Tell selected units to move to point " + e.Position);
+        }
     }
 
-    public void Deselect()
+    private void HandleObjectSelection(SelectedEventArgs e)
     {
-        // Disable the selection mark.
-        SelectionMark.SetActive(false);
+        // If someone is selected.
+        if (SelectedObjects.Count != 0)
+        {
+            // If the actual selected game object is a enemy
+            // And was assigned to attack (Fire2)
+            if (e.GameObject.CompareTag("Enemy") && e.ButtonName == "Fire2")
+            {
+                Debug.Log("Units will attack " + e.GameObject);
+            }
+        }
+        else
+        {
+            // Add it to the selected gameObjects.
+            SelectedObjects.Add(e.GameObject);
+
+            // And select it.
+            var Selectable = e.GameObject.GetComponent<Selectable>();
+            if (Selectable)
+            {
+                Selectable.Select();
+            }
+        }
     }
 }
