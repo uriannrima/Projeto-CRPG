@@ -32,6 +32,8 @@ public class SelectionManager : BaseSingleton<SelectionManager>, IInputInjected
 
     public List<string> Buttons = new List<string>();
 
+    public List<string> CombinationButtons = new List<string>();
+
     public GameObject HighlightedObject;
 
     /// <summary>
@@ -55,6 +57,7 @@ public class SelectionManager : BaseSingleton<SelectionManager>, IInputInjected
             // Handle Highlight.
             HandleHighlight(gameObjectHit);
 
+            // handle Object/Position Selection
             HandleSelection(gameObjectHit, Hit.point);
         }
     }
@@ -81,15 +84,28 @@ public class SelectionManager : BaseSingleton<SelectionManager>, IInputInjected
                     }
                 }
 
+                // Check for combination buttons.
+                List<string> pressedCombinations = new List<string>();
+                // For each possible combination button
+                foreach (string combinationButton in CombinationButtons)
+                {
+                    // If the button is pressed
+                    if (InputProxy.GetButton(combinationButton))
+                    {
+                        // Add it to the pressed buttons.
+                        pressedCombinations.Add(combinationButton);
+                    }
+                }
+
                 // If is selectable, raise event
                 if (isSelectable)
                 {
-                    OnSelected(new SelectedEventArgs(gameObjectHit, button));
+                    OnSelected(new SelectedEventArgs(gameObjectHit, button, pressedCombinations));
                 }
                 // Just tell that some point was clicked.
                 else
                 {
-                    OnSelected(new SelectedEventArgs(positionHit, button));
+                    OnSelected(new SelectedEventArgs(positionHit, button, pressedCombinations));
                 }
             }
         }

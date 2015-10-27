@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// Selected Event Handler.
@@ -13,15 +14,18 @@ public delegate void SelectedEventHandler(object sender, SelectedEventArgs e);
 /// </summary>
 public class SelectedEventArgs : EventArgs
 {
-    public SelectedEventArgs(GameObject selectedObject, string buttonName)
+    public SelectedEventArgs(GameObject selectedObject, string buttonName, List<string> buttonsPressed = null)
     {
         this.GameObject = selectedObject;
-        this.ButtonName = buttonName;
+        this.SelectionButton = buttonName;
+        ButtonsPressed = buttonsPressed;
     }
-    public SelectedEventArgs(Vector3 selectedPosition, string buttonName)
+
+    public SelectedEventArgs(Vector3 selectedPosition, string buttonName, List<string> buttonsPressed = null)
     {
         this.Position = selectedPosition;
-        this.ButtonName = buttonName;
+        this.SelectionButton = buttonName;
+        ButtonsPressed = buttonsPressed;
     }
 
     public GameObject GameObject
@@ -36,9 +40,23 @@ public class SelectedEventArgs : EventArgs
         private set;
     }
 
-    public string ButtonName
+    public string SelectionButton
     {
         get;
         private set;
+    }
+
+    public List<string> ButtonsPressed
+    {
+        get;
+        private set;
+    }
+
+    public bool IsCombined
+    {
+        get
+        {
+            return (ButtonsPressed != null && ButtonsPressed.Count > 0);
+        }
     }
 }

@@ -40,26 +40,70 @@ public class SelectionController : BaseMonoBehavior
 
     private void HandleObjectSelection(SelectedEventArgs e)
     {
-        // If someone is selected.
-        if (SelectedObjects.Count != 0)
+        if (e.SelectionButton == "Fire2") // Right Button Pressed
         {
-            // If the actual selected game object is a enemy
-            // And was assigned to attack (Fire2)
-            if (e.GameObject.CompareTag("Enemy") && e.ButtonName == "Fire2")
+            // There are selected objects
+            if (SelectedObjects.Count != 0)
             {
-                Debug.Log("Units will attack " + e.GameObject);
+                // If the actual selected game object is a enemy
+                // And was assigned to attack (Fire2)
+                if (e.GameObject.CompareTag("Enemy"))
+                {
+                    Debug.Log("Units will attack " + e.GameObject);
+                }
             }
         }
-        else
+        else if (e.SelectionButton == "Fire1") // Left button Pressed
         {
-            // Add it to the selected gameObjects.
-            SelectedObjects.Add(e.GameObject);
-
-            // And select it.
-            var Selectable = e.GameObject.GetComponent<Selectable>();
-            if (Selectable)
+            // A character was selected
+            if (e.GameObject.CompareTag("Character"))
             {
-                Selectable.Select();
+                // If shift (fire3) is pressed, add to the selected list
+                if (e.IsCombined && e.ButtonsPressed.Contains("Fire3"))
+                {
+                    // Already at list
+                    if (SelectedObjects.Contains(e.GameObject))
+                    {
+                        // Remove it from selected
+                        SelectedObjects.Remove(e.GameObject);
+                        e.GameObject.GetComponent<Selectable>().Deselect();
+                    }
+                    // Not at list
+                    else
+                    {
+                        // Add the object to the selected list
+                        SelectedObjects.Add(e.GameObject);
+
+                        // And select it.
+                        var Selectable = e.GameObject.GetComponent<Selectable>();
+                        if (Selectable)
+                        {
+                            Selectable.Select();
+                        }
+                    }                    
+                }
+                // Character was simple selected, so we must change the selection to him
+                else
+                {
+                    // Deselect all selected objects
+                    foreach (GameObject gameObject in SelectedObjects)
+                    {
+                        gameObject.GetComponent<Selectable>().Deselect();
+                    }
+
+                    // Clear selected list
+                    SelectedObjects.Clear();
+
+                    // Add the object to the selected list
+                    SelectedObjects.Add(e.GameObject);
+
+                    // And select it.
+                    var Selectable = e.GameObject.GetComponent<Selectable>();
+                    if (Selectable)
+                    {
+                        Selectable.Select();
+                    }
+                }
             }
         }
     }

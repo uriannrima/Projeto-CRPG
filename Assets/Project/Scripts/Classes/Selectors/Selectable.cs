@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class Selectable : BaseMonoBehavior
 {
@@ -37,5 +38,25 @@ public class Selectable : BaseMonoBehavior
     {
         // Disable the selection mark.
         SelectionMark.SetActive(false);
+    }
+
+    public event EventHandler Selected;
+
+    public event EventHandler Deselected;
+
+    private void OnSelected(EventArgs e)
+    {
+        if (Selected != null)
+        {
+            Selected(this, e);
+        }
+    }
+
+    private void OnDeselected(EventArgs e)
+    {
+        if (Deselected != null)
+        {
+            Deselected(this, e);
+        }
     }
 }
