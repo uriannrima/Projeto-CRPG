@@ -36,6 +36,12 @@ public class CameraInput : BaseMonoBehavior, IInputInjected
 
     public void Update()
     {
+        HandleInput();
+    }
+
+    private void HandleInput()
+    {
+        if (InputProxy == null) return;
         HandleMovement();
         HandleRotation();
         HandleZoom();

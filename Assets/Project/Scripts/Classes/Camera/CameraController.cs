@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 
-public class CameraController : BaseMonoBehavior, ICameraController
+public class CameraController : BaseSingleton<CameraController>, ICameraController
 {
     Vector3 movementDirection;
 
@@ -81,6 +81,21 @@ public class CameraController : BaseMonoBehavior, ICameraController
             Camera.transform.Translate(-Camera.transform.forward * zoomSpeed * intensity, Space.World);
         }
     }
+
+    public void Focus(Vector3 position)
+    {
+        StopAllCoroutines();
+        StartCoroutine(MoveTo(position));
+    }
+
+    public IEnumerator MoveTo(Vector3 position)
+    {
+        while ((this.transform.position - position).sqrMagnitude > 0.5f)
+        {
+            this.transform.position = Vector3.Lerp(this.transform.position, position, Time.deltaTime);
+            yield return null;
+        }
+    }
 }
 
 public interface ICameraController
@@ -100,5 +115,7 @@ public interface ICameraController
     void RotateLeft(float intensity = 1);
 
     void RotateRight(float intensity = 1);
+
+    void Focus(Vector3 position);
 }
 

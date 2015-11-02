@@ -36,6 +36,14 @@ public class SelectionController : BaseMonoBehavior
         {
             Debug.Log("Tell selected units to move to point " + e.Position);
         }
+        else
+        {
+            if (e.SelectionButton == "Fire2")
+            {
+                // Show context menu
+                UIManager.Instance.ShowMenu(e.Position);
+            }
+        }
     }
 
     private void HandleObjectSelection(SelectedEventArgs e)
